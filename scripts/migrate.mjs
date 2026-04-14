@@ -1,8 +1,17 @@
 import fs from "node:fs"
 import path from "node:path"
 import { createHash, randomBytes } from "node:crypto"
+import { createRequire } from "node:module"
 
-import Database from "better-sqlite3"
+const require = createRequire(import.meta.url)
+
+let Database
+
+try {
+  Database = require("better-sqlite3")
+} catch {
+  Database = require("/opt/node_modules/better-sqlite3")
+}
 
 const MIGRATION_VERSION = 1
 const dbPath = process.env.SQLITE_DB_PATH || path.join(process.cwd(), "data", "app.db")
