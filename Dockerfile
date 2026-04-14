@@ -12,6 +12,13 @@ FROM node:${NODE_VERSION} AS dependencies
 # Set working directory
 WORKDIR /app
 
+# Install native build tools required by better-sqlite3.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+  && rm -rf /var/lib/apt/lists/*
+
 # Copy package-related files first to leverage Docker's caching mechanism
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
 
