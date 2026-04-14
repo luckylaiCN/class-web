@@ -1,0 +1,39 @@
+services:
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrator
+    container_name: class-migrate
+    working_dir: /workspace
+    environment:
+      NODE_ENV: production
+      SQLITE_DB_PATH: /workspace/data/app.db
+    volumes:
+      - ./:/workspace
+      - ./data:/workspace/data
+    networks:
+      dm_network:
+        ipv4_address: 172.18.0.11
+    profiles:
+      - migrate
+
+  nextjs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: class-nextjs-app
+    environment:
+      NODE_ENV: production
+      SQLITE_DB_PATH: /app/data/app.db
+      DATABASE_URL: file:/app/data/app.db
+    volumes:
+      - ./data:/app/data
+    networks:
+      dm_network:
+        ipv4_address: 172.18.0.10
+
+networks:
+  dm_network:
+    external: true
+    name: my_network
